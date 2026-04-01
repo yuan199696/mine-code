@@ -14,8 +14,8 @@ export MINIMAX_MODEL="MiniMax-M2.7-highspeed"
 ### Install & Build
 
 ```bash
-git clone https://github.com/beita6969/claude-code.git
-cd claude-code
+git clone https://github.com/yuan199696/mine-code.git
+cd mine-code
 
 # Install dependencies
 bun install
