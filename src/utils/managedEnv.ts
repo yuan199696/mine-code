@@ -85,8 +85,10 @@ function withoutCcdSpawnEnvKeys(
 function filterSettingsEnv(
   env: Record<string, string> | undefined,
 ): Record<string, string> {
-  return withoutCcdSpawnEnvKeys(
-    withoutHostManagedProviderVars(withoutSSHTunnelVars(env)),
+  return withoutShellPriorityKeys(
+    withoutCcdSpawnEnvKeys(
+      withoutHostManagedProviderVars(withoutSSHTunnelVars(env)),
+    ),
   )
 }
 
@@ -109,6 +111,38 @@ const TRUSTED_SETTING_SOURCES = [
 ] as const
 
 /**
+ * Env vars that should always be read from shell environment first,
+ * falling back to settings.json only if not set in the shell.
+ * This allows users to override provider settings via environment exports.
+ */
+const SHELL_PRIORITY_ENV_VARS = new Set([
+  'MINIMAX_BASE_URL',
+  'MINIMAX_API_KEY',
+  'MINIMAX_API_HOST',
+])
+
+/**
+ * Snapshot of shell environment keys for SHELL_PRIORITY_ENV_VARS.
+ * Captured before any settings.env is applied to ensure shell exports
+ * take priority over settings.json for these vars.
+ * Lazy-captured on first applySafeConfigEnvironmentVariables() call.
+ */
+let shellPriorityEnvKeys: Set<string> | null = null
+
+function withoutShellPriorityKeys(
+  env: Record<string, string> | undefined,
+): Record<string, string> {
+  if (!env || !shellPriorityEnvKeys) return env || {}
+  const out: Record<string, string> = {}
+  for (const [key, value] of Object.entries(env)) {
+    if (!shellPriorityEnvKeys.has(key.toUpperCase())) {
+      out[key] = value
+    }
+  }
+  return out
+}
+
+/**
  * Apply environment variables from trusted sources to process.env.
  * Called before the trust dialog so that user/enterprise env vars like
  * ANTHROPIC_BASE_URL take effect during first-run/onboarding.
@@ -128,6 +162,17 @@ export function applySafeConfigEnvironmentVariables(): void {
       process.env.CLAUDE_CODE_ENTRYPOINT === 'claude-desktop'
         ? new Set(Object.keys(process.env))
         : null
+  }
+
+  // Capture shell MINIMAX env keys before any settings.env is applied.
+  // This ensures shell exports (e.g., export MINIMAX_API_KEY=xxx) take priority
+  // over settings.json for these provider-specific vars.
+  if (shellPriorityEnvKeys === null) {
+    shellPriorityEnvKeys = new Set(
+      [...SHELL_PRIORITY_ENV_VARS].filter(
+        key => process.env[key] !== undefined,
+      ),
+    )
   }
 
   // Global config (~/.claude.json) is user-controlled. In CCD mode,
