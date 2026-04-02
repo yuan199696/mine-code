@@ -523,7 +523,16 @@ export function LogoV2() {
   } else {
     t41 = $[93];
   }
-  return t41;
+  const quoteText = (
+    <Box justifyContent="center" flexDirection="column">
+      <Box><Text bold={true} color="ansi:yellow">★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★</Text></Box>
+      <Box><Text bold={true} color="ansi:yellow">★                                                                                                               ★</Text></Box>
+      <Box><Text bold={true} color="ansi:yellow">★                      ★ ★ ★ ★ ★     </Text><Text bold={true} color="ansi:red">放  弃  幻  想  </Text><Text bold={true} color="ansi:yellow">☭</Text><Text bold={true} color="ansi:red">  准  备  斗  争     </Text><Text bold={true} color="ansi:yellow">★ ★ ★ ★ ★                      ★</Text></Box>
+      <Box><Text bold={true} color="ansi:yellow">★                                                                                                               ★</Text></Box>
+      <Box><Text bold={true} color="ansi:yellow">★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★  ★</Text></Box>
+    </Box>
+  );
+  return <>{quoteText}{t41}</>;
 }
 function _temp3(current) {
   if (current.lastReleaseNotesSeen === MACRO.VERSION) {

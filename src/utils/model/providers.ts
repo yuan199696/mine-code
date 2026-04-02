@@ -4,15 +4,25 @@ import { isEnvTruthy } from '../envUtils.js'
 export type APIProvider = 'firstParty' | 'bedrock' | 'vertex' | 'foundry' | 'minimax'
 
 export function getAPIProvider(): APIProvider {
-  return isEnvTruthy(process.env.CLAUDE_CODE_USE_MINIMAX)
-    ? 'minimax'
-    : isEnvTruthy(process.env.CLAUDE_CODE_USE_BEDROCK)
-      ? 'bedrock'
-      : isEnvTruthy(process.env.CLAUDE_CODE_USE_VERTEX)
-        ? 'vertex'
-        : isEnvTruthy(process.env.CLAUDE_CODE_USE_FOUNDRY)
-          ? 'foundry'
-          : 'firstParty'
+  // Auto-detect MiniMax when MINIMAX_API_KEY or MINIMAX_BASE_URL env var is set
+  // This allows MiniMax to work without requiring CLAUDE_CODE_USE_MINIMAX
+  if (
+    process.env.MINIMAX_API_KEY ||
+    process.env.MINIMAX_BASE_URL ||
+    isEnvTruthy(process.env.CLAUDE_CODE_USE_MINIMAX)
+  ) {
+    return 'minimax'
+  }
+  if (isEnvTruthy(process.env.CLAUDE_CODE_USE_BEDROCK)) {
+    return 'bedrock'
+  }
+  if (isEnvTruthy(process.env.CLAUDE_CODE_USE_VERTEX)) {
+    return 'vertex'
+  }
+  if (isEnvTruthy(process.env.CLAUDE_CODE_USE_FOUNDRY)) {
+    return 'foundry'
+  }
+  return 'firstParty'
 }
 
 export function getAPIProviderForStatsig(): AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS {

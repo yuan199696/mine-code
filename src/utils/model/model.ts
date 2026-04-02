@@ -225,6 +225,10 @@ export function getDefaultMinimaxModel(): ModelName {
  * module top-level (see MODEL_COSTS in modelCost.ts).
  */
 export function firstPartyNameToCanonical(name: ModelName): ModelShortName {
+  // Defensive check for undefined/null input
+  if (!name) {
+    return 'claude-sonnet-4-6'
+  }
   name = name.toLowerCase()
   // Special cases for Claude 4+ models to differentiate versions
   // Order matters: check more specific versions first (4-5 before 4)
@@ -455,6 +459,10 @@ export function getPublicModelName(model: ModelName): string {
 export function parseUserSpecifiedModel(
   modelInput: ModelName | ModelAlias,
 ): ModelName {
+  // Defensive check for undefined/null input
+  if (!modelInput) {
+    return 'Sonnet 4.6'
+  }
   const modelInputTrimmed = modelInput.trim()
   const normalizedModel = modelInputTrimmed.toLowerCase()
 
