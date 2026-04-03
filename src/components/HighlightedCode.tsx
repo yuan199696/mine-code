@@ -89,7 +89,7 @@ export const HighlightedCode = memo(function HighlightedCode(t0) {
     }
     let t6;
     if ($[7] !== colorFile || $[8] !== dim || $[9] !== measuredWidth || $[10] !== theme) {
-      t6 = colorFile.render(theme, measuredWidth, dim);
+      t6 = typeof colorFile.render === 'function' ? colorFile.render(theme, measuredWidth, dim) : null;
       $[7] = colorFile;
       $[8] = dim;
       $[9] = measuredWidth;
